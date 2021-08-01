@@ -48,7 +48,7 @@ if args.cuda:
     # Horovod: pin GPU to local rank.
     torch.cuda.set_device(hvd.local_rank())
 
-cudnn.benchmark = True
+cudnn.benchmark = False
 
 # Set up standard model.
 model = getattr(models, args.model)(num_classes=args.num_classes)
