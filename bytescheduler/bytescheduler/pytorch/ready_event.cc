@@ -19,6 +19,8 @@
 #include <mutex>
 #include <queue>
 #include <unordered_map>
+#include <cuda.h>
+#include <cuda_runtime.h>
 #endif
 
 #include "ready_event.h"
@@ -68,7 +70,9 @@ TorchReadyEvent::~TorchReadyEvent() {
 
 bool TorchReadyEvent::Ready() const {
   auto status = cudaEventQuery(cuda_event_);
-  if (status == cudaErrorNotReady) {
+  // checked with cuda document start from CUDA10.1, cudaErrorNotReady=600
+  // https://docs.nvidia.com/cuda/archive/10.1/cuda-runtime-api/group__CUDART__TYPES.html
+  if (status == 600 || status == cudaErrorNotReady) {
     return false;
   }
   THCudaCheck(status);

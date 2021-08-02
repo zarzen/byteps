@@ -69,6 +69,7 @@ if use_bytescheduler > 0:
         os.environ["BYTESCHEDULER_PARTITION"] = str(1000 * args.partition)
     import bytescheduler.pytorch.horovod as bsc
     bsc.init()
+    print('use bytescheduler, loaded plugin')
 
 # Horovod: wrap optimizer with DistributedOptimizer.
 optimizer = hvd.DistributedOptimizer(optimizer,
@@ -76,6 +77,8 @@ optimizer = hvd.DistributedOptimizer(optimizer,
                                      compression=compression)
 if use_bytescheduler > 0:
     optimizer = bsc.ScheduledOptimizer(model, optimizer, args.num_warmup_batches + args.num_iters * args.num_batches_per_iter)
+    print('wrapped optimizer with bytescheduler')
+
 
 # Horovod: broadcast parameters & optimizer state.
 hvd.broadcast_parameters(model.state_dict(), root_rank=0)
